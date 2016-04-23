@@ -1,0 +1,15 @@
+real function calk(pi, hs, tp, gamma)
+implicit none
+  real, intent(in) :: pi, hs, tp, gamma
+  calk = (5./(32.*pi)) * (hs**2)  * tp * (1 - 0.287 * log(gamma))
+end function calk
+
+real function tc(a,b,hs,f,pi,n)
+  real, intent(in) :: a,b,hs,f,pi
+  integer, intent(in) :: n
+  real m2,tz
+  m2 = (b-a)/n * f
+  write(*,*) 'm2 fra funksjon er',m2
+  tc = pi*hs/(2.*sqrt(m2))
+  write(*,*) 'tz fra funksjon er',tc
+end function tc

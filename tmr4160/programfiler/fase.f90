@@ -1,0 +1,120 @@
+!   --------------------------------------------------------------------
+!   DMET DELUX 2000	Subrutine	fase
+!   --------------------------------------------------------------------
+!   HENSIKT :
+!   Beregner fasevinkler for hiv og stamp for begge lektere
+!
+!   METODE :
+!   Tar inn frekvensvektor, konstantverdier fra lektergeometri og 
+!   alle beregnede koeffisienter for stamp. Beregner fasevinkel 
+!   mellom krefter og respons ut fra teorien om dempede svingesystemer
+!   med periodisk kraft. ATAN2-funksjonen i Fortran er brukt. 
+!   Teorien er presentert i rapporten. På grunn av komplekse formler
+!   er uttrykkene faktorisert i stor grad. 
+!   
+!   KALLESEKVENS:
+!   CALL fasekalk(n,nl,omega,M,A33,B33,C33,A55,B55,C55,I55,delta3,delta5)
+!
+!   PARAMETERE:
+!   Navn	I/O	Type			Innhold/Beskrivelse
+!   ....................................................................
+!   omega	I	flyttals vektor		bølgefrekvens			
+!   n		I	heltall			antall frekvensintervaller
+!   nl		I/O	heltall			antall lektere
+!   k		I	flyttallsvektor		bølgetall
+!   zeta_an	I	flyttallsvektor		bølgeamplitude
+!   hs		I	heltall	  		signifikant bølgehøyde
+!   tp		I	heltall			midlere periode
+!   gamma	I	heltall			toppethetsfaktor
+!   pi		I	flyttall		pi
+!   g		I/O	flyttall		tyngdelfeltsakselerasjon
+!   sn		O	flyttallsvektor		spekterverdi
+!   a		I/O	heltall			nedre frekvensverdi
+!   b		I/O	heltall			øvre frekvensverdi
+!   H3		I/O	flyttalls matrise	transferfunksjon hiv
+!   H5		I/O	flyttalls matrise	transferfunksjon stamp
+!   delta3	I/O	flyttalls matrise	fasevinkel hiv
+!   delta5	I/O	flyttalls matrise	fasevinkel stamp
+!   A33		I/O	flyttalls matrise	tilleggsmasse hiv
+!   A55		I/O 	flyttalls matrise	tilleggsmasse stamp
+!   B33		I/O	flyttalls matrise	demping hiv
+!   B55		I/O	flyttalls matrise	demping stamp
+!   C33		I/O	flyttalls vektor	fjørkoeffisient hiv
+!   C55		I/O	flyttalls vektor	fjærkoeffisient stamp
+!   L		I/O	heltalls vektor		lengde på lekter
+!   Br		I/O 	heltalls vektor		bredde på lekter
+!   D		I/O	flyttalls vektor	dypgang på lekter
+!   H		I/O	flyttalls vektor	dybde i riss for lekter
+!   M		I/O	flyttalls vektor	masse lekter
+!   GML		I/O	flyttalls vektor	langskips metasenter
+!   I33		I/O	flyttall vektor		andre arealmoment tverrskips
+!   I55		I/O	flyttalls vektor	andre arealmoment langskips
+!   pi		I/O	flyttall		pi
+!   rho		I/O	flyttal			tetthet sjøvann
+!   g		I/O	flyttall		tyngdeakselerasjonen
+!   	
+!
+!   INTERNE VARIABLE:
+!   Navn			Funksjon	
+!   .....................................................................
+!   i				tellevariabler
+!   t3,n3,t5,n5			faktorer i uttrykk!
+!   
+!   SKRIVEFILER:
+!   Navn			Eventuell beskrivelse
+!   .....................................................................
+!   fase3sjekk.txt		skriver resultat for visuell kontroll
+!   fase5sjekk.txt		skriver resultat for visuell kontroll
+!
+!   --------------------------------------------------------------------
+!  
+!   Programmert av:	     Tor Erik Larsen
+!   Dato/Versjon  : 	     27.04.15 / 1.0
+!
+!   --------------------------------------------------------------------
+
+SUBROUTINE fasekalk(n,nl,omega,M,A33,B33,C33,A55,B55,C55,I55,delta3,delta5)
+IMPLICIT NONE
+!Erklærer vektorer og parametere
+INTEGER::i,j,n,nl
+REAL::rho,g
+DOUBLE PRECISION::t3,n3,t5,n5
+REAL,DIMENSION(1:n,1:nl)::A33,B33,A55,B55
+REAL,DIMENSION(1:nl)::C33,C55,M,I55
+DOUBLE PRECISION,DIMENSION(1:n)::omega
+DOUBLE PRECISION,DIMENSION(1:n,1:nl)::delta3,delta5
+
+!Regner fasevinkel for hivbevegelse
+DO i=1,n
+   DO j=1,nl
+      t3 = -omega(i)*B33(i,j)
+      n3 = (C33(j) - (M(j) + A33(i,j))*omega(i)**2)
+      delta3(i,j) = ATAN2(t3,n3)
+   END DO
+END DO
+
+!Regner fasevinkel for stampebevegelse
+DO i=1,n
+   DO j=1,nl
+      t5 = omega(i)*B55(i,j)
+      n5 = (C55(j) - (I55(j) + A55(i,j))*omega(i)**2)
+      delta5(i,j) = ATAN2(t5,n5)
+   END DO
+END DO
+
+!Skriver hivfase til fil for visuell kontroll
+OPEN(249,FILE="fase3sjekk.txt",ACTION="WRITE",STATUS="UNKNOWN")
+DO i=1,n
+   WRITE(249,*)omega(i), delta3(i,1), delta3(i,2)
+END DO
+CLOSE(249)
+
+!Skriver stampefasevinkel til fil for kontroll
+OPEN(251,FILE="fase5sjekk.txt",ACTION="WRITE",STATUS="UNKNOWN")
+DO i=1,n
+   WRITE(251,*) omega(i), delta5(i,1), delta5(i,2)
+END DO
+CLOSE(251)
+
+RETURN
+END SUBROUTINE

@@ -1,0 +1,22 @@
+program middelperiode
+real  hs, tp, gamma, omega, b, pi,s,a, omegap,f, k, integral
+integer i,n
+
+hs = 12
+tp = 10
+gamma = 3
+b = 3
+n = 100
+pi = 3.1415
+S = 0
+a = 0
+omegap = 2*pi / tp
+f = 0
+
+k = calk(pi, hs, tp, gamma)
+call fcal(omegap,k,a,b,n,f)
+write(*,*)'f fra program  er:', f
+tz = tc(a,b,hs,f,pi,n)
+write(*,*) 'Tz fra programmet er: ', tz
+
+end program

@@ -1,0 +1,92 @@
+//   --------------------------------------------------------------------
+//   DMET DELUX 2000	Subrutine	fase
+//   --------------------------------------------------------------------
+//   HENSIKT :
+//   Beregner fasevinkler for hiv og stamp for begge lektere
+//
+//   METODE :
+//   Tar inn frekvensvektor, konstantverdier fra lektergeometri og 
+//   alle beregnede koeffisienter for stamp. Beregner fasevinkel 
+//   mellom krefter og respons ut fra teorien om dempede svingesystemer
+//   med periodisk kraft. ATAN2-funksjonen i Fortran er brukt. 
+//   Teorien er presentert i rapporten. På grunn av komplekse formler
+//   er uttrykkene faktorisert i stor grad. 
+//   
+//   KALLESEKVENS:
+//   CALL fasekalk(n,nl,omega,M,A33,B33,C33,A55,B55,C55,I55,delta3,delta5)
+//
+//   PARAMETERE:
+//   Navn	I/O	Type			Innhold/Beskrivelse
+//   ....................................................................
+//   omega	I	flyttals vektor		bølgefrekvens			
+//   n		I	heltall			antall frekvensintervaller
+//   nl		I/O	heltall			antall lektere
+//   k		I	flyttallsvektor		bølgetall
+//   zeta_an	I	flyttallsvektor		bølgeamplitude
+//   hs		I	heltall	  		signifikant bølgehøyde
+//   tp		I	heltall			midlere periode
+//   gamma	I	heltall			toppethetsfaktor
+//   pi		I	flyttall		pi
+//   g		I/O	flyttall		tyngdelfeltsakselerasjon
+//   sn		O	flyttallsvektor		spekterverdi
+//   a		I/O	heltall			nedre frekvensverdi
+//   b		I/O	heltall			øvre frekvensverdi
+//   H3		I/O	flyttalls matrise	transferfunksjon hiv
+//   H5		I/O	flyttalls matrise	transferfunksjon stamp
+//   delta3	I/O	flyttalls matrise	fasevinkel hiv
+//   delta5	I/O	flyttalls matrise	fasevinkel stamp
+//   A33		I/O	flyttalls matrise	tilleggsmasse hiv
+//   A55		I/O 	flyttalls matrise	tilleggsmasse stamp
+//   B33		I/O	flyttalls matrise	demping hiv
+//   B55		I/O	flyttalls matrise	demping stamp
+//   C33		I/O	flyttalls vektor	fjørkoeffisient hiv
+//   C55		I/O	flyttalls vektor	fjærkoeffisient stamp
+//   L		I/O	heltalls vektor		lengde på lekter
+//   Br		I/O 	heltalls vektor		bredde på lekter
+//   D		I/O	flyttalls vektor	dypgang på lekter
+//   H		I/O	flyttalls vektor	dybde i riss for lekter
+//   M		I/O	flyttalls vektor	masse lekter
+//   GML		I/O	flyttalls vektor	langskips metasenter
+//   I33		I/O	flyttall vektor		andre arealmoment tverrskips
+//   I55		I/O	flyttalls vektor	andre arealmoment langskips
+//   pi		I/O	flyttall		pi
+//   rho		I/O	flyttal			tetthet sjøvann
+//   g		I/O	flyttall		tyngdeakselerasjonen
+//   	
+//
+//   INTERNE VARIABLE:
+//   Navn			Funksjon	
+//   .....................................................................
+//   i				tellevariabler
+//   t3,n3,t5,n5			faktorer i uttrykk
+//   eta5nevner			faktor i uttrykk
+//   eta5A			utslag for lekter i meter	
+//   
+//   SUBRUTINER:
+//   Navn			Funksjonsbeskrivelse
+//   .....................................................................
+//   konstanter			beregner metasenter og andre arealmomenter
+//   akalk			beregner tilleggmasse i hiv
+//   bckalk			beregner demping og fjærkoeffisienter
+//   h3kalk			beregner transferfunksjoner hiv
+//   h5kalk			beregner transferfunksjoner stamp
+//   fasekalk			beregner fasevinkel for bevegelser
+//
+//   LESEFILER:
+//   Navn			Eventuell beskrivelse
+//   .....................................................................
+//   konstantinput.txt		inneholder lektergeometri
+//
+//   
+//   SKRIVEFILER:
+//   Navn			Eventuell beskrivelse
+//   .....................................................................
+//   fase3sjekk.txt		skriver resultat for visuell kontroll
+//   fase5sjekk.txt		skriver resultat for visuell kontroll
+//
+//   --------------------------------------------------------------------
+//  
+//   Programmert av:	     Tor Erik Larsen
+//   Dato/Versjon  : 	     27.04.15 / 1.0
+//
+//   --------------------------------------------------------------------

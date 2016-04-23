@@ -1,0 +1,90 @@
+ !---------------------------------------------------------------
+! Subrutine: TROLOLOL
+!---------------------------------------------------------------
+!Hensikt:
+!Beregne hydrodynamiske koeffisienter for TROLORLOLNNNNN
+!
+!Metode:
+!TROLOLOLO
+!
+!Parametere:
+!
+!Kallesekvens:
+!
+!
+!Programmert av: Tor Erik Larsen
+!Dato: i dag
+!---------------------------------------------------------------
+!Starter subrutine og erklærer alle variable og vektorer
+SUBROUTINE bckalk(n,nl,rho,g,omega,L,Br,D,GML,B33,B55,C33,C55)
+IMPLICIT NONE
+INTEGER::i,j,n,nl
+REAL::rho,g
+REAL,DIMENSION(1:nl)::L,Br,D,GML,C33,C55
+REAL,DIMENSION(1:n,1:nl)::B33,B55,B33plot
+DOUBLE PRECISION,DIMENSION(1:n)::omega,oomegaA,oomegaB
+
+!Beregner x-aksen for koeffisientene
+DO i=1,n
+   oomegaA(i) = omega(i)*SQRT(Br(1)/(2.0*g))
+   oomegaB(i) = omega(i)*SQRT(Br(2)/(2.0*g))
+END DO
+
+!Beregner B33_2D plotteverdi for lekter A, sjetteegradspolynom
+DO i=1,n
+   IF (oomegaA(i) < 1.47) THEN
+      B33plot(i,1) = (  &
+           0.985*oomegaA(i)**6 &
+           - 5.368*oomegaA(i)**5 + 10.474*oomegaA(i)**4 &
+           - 7.778*oomegaA(i)**3 + 0.077*oomegaA(i)**2 &
+           + 1.727*oomegaA(i)**1 + 0.004 &
+           )
+   ELSE
+      B33plot(i,1) = 0.001
+END IF
+END DO
+
+!Beregner B33_2D plotteverdi for lekter B, femtegradspolynom
+DO i=1,n
+   IF (oomegaB(i) < 2.03) THEN
+   B33plot(i,2) = ( &
+        - 0.220*oomegaB(i)**5 &
+        + 0.547*oomegaB(i)**4 + 1.431*oomegaB(i)**3 &
+        - 5.396*oomegaB(i)**2 + 4.212*oomegaB(i)**1 &
+        + 0.017 &
+        )
+ELSE
+   B33plot(i,2) = 0.001
+END IF
+END DO 
+
+!Beregner fullengde B33, ved å gange A33_2D med lengde L
+DO i=1,n
+   B33(i,1) = L(1) * B33plot(i,1) * (rho*Br(1)*D(1) * &
+        SQRT((2.0*g) / Br(1)) )
+   B33(i,2) = L(2) * B33plot(i,2) * (rho*Br(2)*D(2) * &
+        SQRT( (2.0*g) / Br(2) ) )
+END DO
+
+!Beregner koeffisientene i stamp, A55 og B55, UT FRA A33_2D
+DO i=1,n
+   B55(i,1) = (L(1)**2 / 12) * B33(i,1)
+   B55(i,2) = (L(2)**2 / 12) * B33(i,2)
+END DO
+
+!Beregner fjærkoeffisientene C33 og C55
+DO j=1,nl
+   C33(j) = rho*g*L(j)*Br(j)
+   C55(j) = rho*g*L(j)*Br(j)*D(j)*GML(j)
+END DO
+
+!Bygger plottefil for å sjekke at koeffisientene er regnet riktig
+OPEN(44,FILE="B33plot.txt",ACTION="WRITE",STATUS="UNKNOWN")
+DO i=1,n
+   WRITE(44,*) oomegaA(i), B33plot(i,1), oomegaB(i), B33plot(i,2)
+END DO
+CLOSE(44)
+
+!Gir tilbake kontrollen til hovedprogram og avslutter subrutine
+RETURN
+END SUBROUTINE

@@ -1,0 +1,20 @@
+BRUKSANVISNING FOR DMET DELUXE 2000
+
+At du leser denne tekstfilen betyr at du ønsker å kjøre dette programmet
+for å beregne lektere.
+
+1. Åpne terminal/ shell/ bash i Linux
+2. Naviger til riktig mappe ("programfiler")
+3. Skriv "  ./dmet.sh " uten hermetegn i terminal
+4. Følg instrukser på skjermen
+
+eventuelt for kun å kompilere kode:
+
+1. Skriv "make"
+2. Skriv "make c"
+
+VISUALISERING
+Det er lagt ved to versjoner av VTF-filen. Den ene filen har Windows-linjeendinger, og
+er den som skal kjøres på Windows. Filene er klare til å kjøres.
+
+Tor Erik Larsen

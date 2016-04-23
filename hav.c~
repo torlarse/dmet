@@ -1,0 +1,118 @@
+//   --------------------------------------------------------------------
+//   DMET DELUX 2000	Subrutine	hav
+//   --------------------------------------------------------------------
+//   HENSIKT :
+//   Skrive overflateheving for havteppenoder til VTF-fil
+//
+//   METODE :
+//   Ta inn frekvensvektor, fasevinkel, bølgeamplitude pg bølgetall. 
+//   Beregne overflateheving for hver enkelt node i havteppet, og skrive
+//   resultatet til VTF-filen.
+//
+//   KALLESEKVENS:
+//   havFlate(A,omega,k,epsilon);
+//
+//   PARAMETERE:
+//   Navn	I/O	Type			Innhold/Beskrivelse
+//   ....................................................................
+//   omega	I	flyttals vektor		bølgefrekvens			
+//   n		I	heltall			antall frekvensintervaller
+//   nl		I	heltall			antall lektere
+//   k		I	flyttallsvektor		bølgetall
+//   A		I	flyttallsvektor		bølgeamplitude
+//   pi		I	flyttall		pi
+//   g		I	flyttall		tyngdelfeltsakselerasjon
+//   a		I	flyttall		2pi
+//   H3		I	flyttalls matrise	transferfunksjon hiv
+//   H5		I	flyttalls matrise	transferfunksjon stamp
+//   delta3	I	flyttalls matrise	fasevinkel hiv
+//   delta5	I	flyttalls matrise	fasevinkel stamp
+//   L		I	heltalls vektor		lengde på lekter
+//   B		I 	heltalls vektor		bredde på lekter
+//   D		I	flyttalls vektor	dypgang på lekter
+//   H		I	flyttalls vektor	dybde i riss for lekter
+//   pi		I	flyttall		pi
+//   rho	I	flyttal			tetthet sjøvann
+//   g		I	flyttall		tyngdeakselerasjonen
+//   epsilon	I  	flyttal			fasevinkel respons
+//   fps	I	heltall			steg per sekund
+//   Zeta	O	flyttall		utslag i meter for noder
+//
+//
+//   INTERNE VARIABLE:
+//   Navn			Funksjon	
+//   .....................................................................
+//   i,j			tellevariabler
+//   t				tid
+//   Zetasjekk			overflateheving for plottefil
+//   x, halvx			mellomvariabler for utslag
+//   
+//   SUBRUTINER:
+//   Navn			Funksjonsbeskrivelse
+//   .....................................................................
+//   lesInn			leser inn resultatfil fra Fortran-program
+//   glModell			bygger første del av VTF-fil med geometri
+//   havFlate			skriver overflateheving til havteppe
+//   respons			skriver respons for lektere til VTF-fil
+//   kontroll			sammenstiller resultater i tidssteg
+//
+//   
+//   SKRIVEFILER:
+//   Navn			Eventuell beskrivelse
+//   .....................................................................
+//   dmet.vtf			visualiseringsfil
+//   overflateplott.dat		overflatehevingsverdier for x
+//
+//   --------------------------------------------------------------------
+//  
+//   Programmert av:	     Tor Erik Larsen
+//   Dato/Versjon  : 	     27.04.15 / 1.0
+//
+//   --------------------------------------------------------------------
+
+#include "header.h"
+
+void havFlate(double A[N], double omega[N], double k[N],double epsilon[N]){
+  int i,j,n,x;
+  double Zeta[2],Zetasjekk,t;
+  double halvx,xstart;
+  FILE * filpeker;
+  FILE * filpeker2;
+  //srand (time(NULL));
+
+  //Åpner VTF-fil og starter skriving
+  filpeker = fopen("dmet.vtf", "a");
+  filpeker2 = fopen("overflateplott.dat","w");
+  xstart = -havlengde/2.0;
+  for(i=0;i<steg;i++){
+    fprintf(filpeker,"*RESULTS %d\n",i+1);
+    fprintf(filpeker,"%s","%DIMENSION 3\n");
+    fprintf(filpeker,"%s","%PER_NODE #1\n");
+    t= i*1.0/fps;
+    Zetasjekk = 0;
+    for(j=133;j<134;j++){
+      Zetasjekk = Zetasjekk + A[j]*sin(omega[j]*t - k[j]*(0) \
+				       + epsilon[j]);
+      }
+    for(x=xstart;x<havlengde/2.0;n++){
+      Zeta[0] = 0;
+      Zeta[1] = 0;
+      halvx = n+0.5;
+      for(j=0;j<N;j+=intervall){
+	Zeta[0] = Zeta[0] + A[j]*sin(omega[j]*t - k[j]*x + epsilon[j]);
+	Zeta[1] = Zeta[1] + A[j]*sin(omega[j]*t - k[j]*halvx + epsilon[j]);
+      }
+      fprintf(filpeker,"%d %d %f\n", 0, 0, Zeta[0]);
+      fprintf(filpeker,"%d %d %f\n", 0, 0, Zeta[1]);
+      fprintf(filpeker,"%d %d %f\n", 0, 0, Zeta[1]);
+      fprintf(filpeker,"%d %d %f\n", 0, 0, Zeta[0]);
+    }  
+      fprintf(filpeker2,"%lf\n",Zetasjekk);
+  }
+  fclose(filpeker);
+  fclose(filpeker2);
+  //Gir tilbake kontroll til program
+  return;
+}
+
+

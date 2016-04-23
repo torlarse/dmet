@@ -1,0 +1,127 @@
+!   --------------------------------------------------------------------
+!   DMET DELUX 2000	Subrutine	spekter             No.:
+!   --------------------------------------------------------------------
+!   HENSIKT :
+!   Beregne JONSWAP-spekter, bølgeamplituder og bølgetall
+!
+!   METODE :
+!   Tar inn frekvens og spekterparametere som signifikant bølgehøyde, 
+!   midlere periode og toppethetsfaktor (gamma). Benytter disse for 
+!   å beregne spekterverdier som kan plottes, samt bølgeamplituder
+!   og bølgetall for hver enkelt frekvens
+!   
+!   KALLESEKVENS:
+!   CALL spekter(a,b,n,pi,omega,sn,zeta_an,k,g,Hs)
+!
+!   PARAMETERE:
+!   Navn	I/O	Type			Innhold/Beskrivelse
+!   .......................................................................
+!   omega	I	flyttals vektor		bølgefrekvens			
+!   n		I	heltall			antall frekvensintervaller
+!   k		I	flyttalls vektor	bølgetall
+!   zeta_an	I	flyttalls vektor	bølgeamplitude
+!   hs		I	heltall	  		signifikant bølgehøyde
+!   tp		I	heltall			midlere periode
+!   gamma	I	heltall			toppethetsfaktor
+!   pi		I	flyttall		pi
+!   g		I	flyttall		tyngdelfeltsakselerasjon
+!   sn		O	flyttall		spekterverdi
+!   a		I	heltall			nedre frekvensverdi
+!   b		I	heltall			øvre frekvensverdi
+!
+!   INTERNE VARIABLE:
+!   Navn			Funksjon	
+!   .....................................................................
+!   i,m,n			tellevariabler
+!   omegap			mellomregningsvariabel
+!   konstant,v1,v2,v3		mellomregningsvariabler
+!   deltaomega			mellomregningsvariabel
+!   sigma			frekvensparameter
+!   omegap			frekvensparameter
+!   
+!   SUBRUTINER:
+!   Navn			Funksjonsbeskrivelse
+!   .....................................................................
+!
+!
+!   LESEFILER:
+!   Navn			Eventuell beskrivelse
+!   .....................................................................
+!   parameter.dat		inneholder spekterinformasjon oppgitt
+!
+!   
+!   SKRIVEFILER:
+!   Navn			Eventuell beskrivelse
+!   .....................................................................
+!   spekterplot.dat		skriver frekvens og spekterverdier
+!   
+!
+!   --------------------------------------------------------------------
+!  
+!   Programmert av:	     Tor Erik Larsen
+!   Dato/Versjon  : 	     27.04.15 / 1.0
+!
+!   --------------------------------------------------------------------
+
+SUBROUTINE spekter(a,b,n,pi,omega,sn,zeta_an,k,g,Hs)
+IMPLICIT NONE
+
+!Erklærer variable
+INTEGER::i,m,n
+REAL::a,b,tp,gamma,omegap,pi,g,deltaomega,Hs
+DOUBLE PRECISION::konstant,v1,v2,v3
+DOUBLE PRECISION,DIMENSION(1:n)::omega,sn,sigma,zeta_an,k
+
+!Åpner inndatafil og regner omegap, skriver kontroll til skjerm
+OPEN(10,file="parameter.dat")
+READ(10,*) hs,tp,gamma,a,b
+CLOSE(10)
+
+!Beregner omega-vektor
+m = SIZE(omega,1)
+DO i=1,m
+   omega(i) = a + (b-a)*(i-0.5)/n
+END DO
+
+!Beregner omegap
+omegap = (2.0*pi)/tp
+
+!Beregner sigma-vektor
+do i = 1,n
+   if (omegap< omega(i)) then
+      sigma(i) = 0.09
+   ELSE
+      sigma(i) = 0.07
+   END IF
+END DO
+
+!Faktoriserer Sn
+DO i = 1,n
+   konstant = (5.0/(32.0*pi))*(hs**2)*tp*(1.0 - 0.287*log(gamma))
+   v1 = (omegap/omega(i))**5
+   v2 = exp(-(5.0/4.0)*((omegap/omega(i))**4))
+   v3 = gamma**(exp(-((omega(i)/omegap)-1.0)**2/(2.0*sigma(i)**2)))  
+   sn(i)=konstant*v1*v2*v3
+END DO
+
+!Beregner amplitudevektor
+deltaomega = (b-a)/n
+DO i=1,n
+   zeta_an(i) = SQRT(2.0*sn(i)*deltaomega)
+END DO
+
+!Regner ut vektor for bølgetallet k
+DO i=1,n
+   k(i)=omega(i)**2 / g
+END DO
+
+!Skriver spekteret til fil som kan plottes
+OPEN(1010,FILE="spekterplot.dat",ACTION="WRITE",STATUS="UNKNOWN")
+DO i=1,n
+   WRITE(1010,*) omega(i), sn(i)
+END DO
+CLOSE(1010)
+
+!Gir tilbake kontrollen og avslutter subrutine
+RETURN
+END SUBROUTINE

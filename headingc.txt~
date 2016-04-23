@@ -1,0 +1,31 @@
+//   --------------------------------------------------------------------
+//   DMET DELUX 2000	Subrutine                   No.:
+//   --------------------------------------------------------------------
+//
+//   Hensikt :
+//   BLABLABLA
+//   Metode :
+//   
+//  
+//
+//   Kall sekvens .......................................................
+//
+//     CALL        CALMOM(SM0, SM2, GAMMA, HS, TP, W, H, N)
+//
+//   Parametre:
+//   Navn	I/O	Type		Innhold/Beskrivelse
+//   .................................................................
+//   omega	I/O	double		
+//
+//
+//     INTERNE VARIABLE:
+//     IERR        Feilflagg
+//     
+//     FUNKSJONER:
+//     wspekt      Regner verdien til boelge-spekteret for en gitt w
+//     tabint      integrere en tabulert funksjon
+//   Programmert av:	     Tor Erik Larsen
+//   Date/Version  : 	     27.04.15 / 1.0
+//
+// **********************************************************************
+//

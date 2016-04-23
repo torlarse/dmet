@@ -1,0 +1,26 @@
+#include "header.h"
+
+//Definerer hovedfil
+int main(){
+  int i,j;
+  int L[NL];
+  int B[NL];
+  float D[NL],H[NL];
+  double omega[N],k[N],A[N];
+  double H3[N][NL],H5[N][NL],delta3[N][NL],delta5[N][NL];
+  double epsilon[N],a=2.0*pi;
+  //srand(time(NULL));
+
+  //Beregner fasevinkel for å sende til hav.c og respons
+  for (j=0;j<N;j++){
+    epsilon[j] = ((double)rand()/(double)(RAND_MAX))*a;
+  }
+  //Kaller opp alle subrutiner
+  lesInn(L,B,D,H,omega,k,A,H3,H5,delta3,delta5);
+  glModell(L,B,D,H);
+  havFlate(A,omega,k,epsilon);
+  respons(L,B,D,H,omega,k,A,H3,H5,delta3,delta5,epsilon);
+  kontroll();
+
+  return 0;
+}

@@ -1,0 +1,41 @@
+//   --------------------------------------------------------------------
+//   DMET DELUX 2000	header
+//   --------------------------------------------------------------------
+//   HENSIKT :
+//   Inkludere innebygde C-biblioteker, definerere konstanter og erklære
+//   subrutiner i programmet
+//
+//   METODE :
+//
+//   KALLESEKVENS:
+//   #include "header.h"
+//
+//   PARAMETERE:
+//   Navn	I/O	Type			Innhold/Beskrivelse
+//   ....................................................................
+//   pi		O	flyttall		pi
+//   intervall	O	heltall			steg mellom bølger
+//   N		O	heltall			antall bølger
+//   NL		O	heltall			antall lektere
+//   fps	O	heltall			tidsintervall persekund
+//   steg	O	heltall			antall resultater
+//   havlengde	O	heltall			lengde havteppe
+//   havbredde 	O	heltall			bredde havteppe
+//   stripebredde O	heltall			bredde havstripe
+//   nstriper	  O	heltall			antall havstriper totalt	
+//   
+//   SUBRUTINER
+//   Navn			Eventuell beskrivelse
+//   .....................................................................
+//   lesInn			Se beskrivelse i hoved.c
+//   glModell
+//   havFlate
+//   respons
+//   kontroll
+//
+//   --------------------------------------------------------------------
+//  
+//   Programmert av:	     Tor Erik Larsen
+//   Dato/Versjon  : 	     27.04.15 / 1.0
+//
+//   --------------------------------------------------------------------

@@ -1,0 +1,38 @@
+#include "header.h"
+
+//Definerer subrutine som kjøres i denne filen
+
+void lesInn(int L[NL],int B[NL],float D[NL],float H[NL],	\
+	    double omega[N],double k[N],double A[N], \
+	    double H3[N][NL],double H5[N][NL],		\
+	    double delta3[N][NL],double delta5[N][NL]){
+
+  //Definerer filnavn og erklærer telletall
+  FILE * filpeker;
+  FILE * filpeker2;
+  int i,j;
+  //Laster inn konstantfil og fyller lektergeometri i vektorene
+  filpeker = fopen("konstantinput.txt", "r");
+  for(i=0;i<NL;i++){
+    fscanf(filpeker,"%d %d %f %f",&L[i],&B[i],&D[i],&H[i]);
+  }
+  fclose(filpeker);
+
+  //Laster inn resultatfil og fyller vektorer
+  filpeker = fopen("fortranresultat.txt", "r");
+  filpeker2 = fopen("responslesinn.txt","w");
+  for(i=0;i<N;i++){
+    fscanf(filpeker,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",	\
+	   &omega[i],&k[i],&A[i],&H3[i][0],&H3[i][1],&H5[i][0],&H5[i][1], \
+	   &delta3[i][0],&delta3[i][1],&delta5[i][0],&delta5[i][1]);
+    fprintf(filpeker2,"%lf %lf %lf %lf %lf %lf\n",H3[i][0],H3[i][1],H5[i][0],H5[i][1],delta3[i][0],delta5[i][1]);
+  }
+  fclose(filpeker2);
+  fclose(filpeker);
+
+  //Gir tilbake kontroll og avslutter subrutine
+  return;  
+}
+
+
+

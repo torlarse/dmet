@@ -1,0 +1,73 @@
+!   --------------------------------------------------------------------
+!   DMET DELUX 2000	Subrutine	statistikk
+!   --------------------------------------------------------------------
+!   HENSIKT :
+!   Beregner bølgestatistikk fra oppgitt JONSWAP-spekter
+!
+!   METODE :
+!   Tar inn frekvensvektor,spekterverdier og spekterparametere fra 
+!   tidligere subrutiner. Beregner spektermomenter, midlere periode
+!   og maksimal bølgehøyde for en femtimers periode.
+!   
+!   KALLESEKVENS:
+!   CALL statistikk(a,b,n,omega,Sn,Hs,pi)
+!
+!   PARAMETERE:
+!   Navn	I/O	Type			Innhold/Beskrivelse
+!   ....................................................................
+!   omega	I	flyttals vektor		bølgefrekvens			
+!   n		I	heltall			antall frekvensintervaller
+!   k		I	flyttallsvektor		bølgetall
+!   zeta_an	I	flyttallsvektor		bølgeamplitude
+!   hs		I	heltall	  		signifikant bølgehøyde
+!   tp		I	heltall			midlere periode
+!   gamma	I	heltall			toppethetsfaktor
+!   pi		I	flyttall		pi
+!   g		I	flyttall		tyngdelfeltsakselerasjon
+!   sn		I	flyttallsvektor		spekterverdi
+!   a		I	heltall			nedre frekvensverdi
+!   b		I	heltall			øvre frekvensverdi
+!   pi		I	flyttall		pi
+!   rho		I	flyttal			tetthet sjøvann
+!   g		I	flyttall		tyngdeakselerasjonen
+!   Tm02	O	flyttall		nullkrysningsperiode
+!   Tm0e	O	flyttall		middelperiode
+!   Tm24	O	flyttall		middelperiode mellom topper
+/    Hmax	O	flyttal			største bølgehøyde fem timer
+!
+!   INTERNE VARIABLE:
+!   Navn			Funksjon	
+!   .....................................................................
+!   i,n				tellevariabler
+!   deltaomega			frekvensintervall
+!   m0,m1,m2,m4			spektermomenter
+!   mndelsum			mellomregningsverdier	   
+!   
+!   SUBRUTINER:
+!   Navn			Funksjonsbeskrivelse
+!   .....................................................................
+!   konstanter			beregner metasenter og andre arealmomenter
+!   akalk			beregner tilleggmasse i hiv
+!   bckalk			beregner demping og fjærkoeffisienter
+!   h3kalk			beregner transferfunksjoner hiv
+!   h5kalk			beregner transferfunksjoner stamp
+!   fasekalk			beregner fasevinkel for bevegelser
+!
+!   LESEFILER:
+!   Navn			Eventuell beskrivelse
+!   .....................................................................
+!   konstantinput.txt		inneholder lektergeometri
+!
+!   
+!   SKRIVEFILER:
+!   Navn			Eventuell beskrivelse
+!   .....................................................................
+!   statistikk.txt		resultater for bølgestatistikk
+!
+!   --------------------------------------------------------------------
+!  
+!   Programmert av:	     Tor Erik Larsen
+!   Dato/Versjon  : 	     27.04.15 / 1.0
+!
+!   --------------------------------------------------------------------
+
